@@ -22,7 +22,7 @@ CREATE TABLE servicio(
 );
 
 CREATE TABLE medico(
-  matricula INT PRIMARY KEY,
+  matricula TEXT PRIMARY KEY,
   dni       INT UNIQUE NOT NULL,
   nombre    TEXT NOT NULL,
   apellido  TEXT NOT NULL,
@@ -40,15 +40,22 @@ CREATE TABLE turno(
   fecha       TIMESTAMP NOT NULL,
   confirmado  BOOLEAN NULL DEFAULT (FALSE),
   estado      TEXT NULL CHECK (estado IN ('en espera', 'atendido', 'cancelado', 'no atendido')) DEFAULT ('en espera'),
-  dia         DIA_HABIL NULL, 
+  dia         DIA_HABIL, 
   CONSTRAINT fk_servicio_turno FOREIGN KEY (servicio) REFERENCES servicio(nombre),
   CONSTRAINT fk_paciente FOREIGN KEY (paciente) REFERENCES paciente(dni)
 );
 
 CREATE OR REPLACE FUNCTION calcular_dia_semana()
 RETURNS TRIGGER AS $$
+DECLARE 
+  dow INTEGER;
 BEGIN
-  NEW.dia := CASE EXTRACT(DOW FROM NEW.fecha)
+  dow = EXTRACT(DOW FROM NEW.fecha);
+  IF dow = 0 THEN 
+    RAISE EXCEPTION 'El establecimiento se encuentra cerrado los días domingo';
+  END IF;
+
+  NEW.dia := CASE dow
                 WHEN 1 THEN 'lun'
                 WHEN 2 THEN 'mar'
                 WHEN 3 THEN 'mie'
@@ -72,7 +79,7 @@ CREATE TABLE equipo(
 
 CREATE TABLE disponibilidad(
   dia           DIA_HABIL, 
-  medico        INT NOT NULL,
+  medico        TEXT NOT NULL,
   hora_entrada  TIME CHECK ((dia != 'sab' AND hora_entrada >= '08:00' AND hora_entrada < '20:00') OR (dia = 'sab' AND hora_entrada >= '08:00' AND hora_entrada < '14:00')),
   hora_salida   TIME CHECK ((dia != 'sab' AND hora_salida > '08:00' AND hora_salida<= '20:00') OR (dia = 'sab' AND hora_salida > '08:00' AND hora_salida<= '14:00')),
   PRIMARY KEY (dia, medico, hora_entrada, hora_salida),
