@@ -1,4 +1,4 @@
--- AGREGAR RESTRICCIONES AL MOMENTO DE ELEGIR LA FECHA LUEGO DE LA CONVERSIÓN
+-- AGREGAR RESTRICCIÓN SOBRE HORARIO DEL TURNO
 -- REVISAR EL TIPO DE DATO SERIAL
 
 CREATE TABLE obra_social(
@@ -38,39 +38,45 @@ CREATE TABLE turno(
   servicio    TEXT NOT NULL,
   monto       DECIMAL(12, 2) NOT NULL,
   fecha       TIMESTAMP NOT NULL,
+  dia         DIA_HABIL NOT NULL, 
   confirmado  BOOLEAN NULL DEFAULT (FALSE),
   estado      TEXT NULL CHECK (estado IN ('en espera', 'atendido', 'cancelado', 'no atendido')) DEFAULT ('en espera'),
-  dia         DIA_HABIL, 
   CONSTRAINT fk_servicio_turno FOREIGN KEY (servicio) REFERENCES servicio(nombre),
   CONSTRAINT fk_paciente FOREIGN KEY (paciente) REFERENCES paciente(dni)
 );
 
-CREATE OR REPLACE FUNCTION calcular_dia_semana()
+CREATE OR REPLACE FUNCTION chequear_dia_semana()
 RETURNS TRIGGER AS $$
 DECLARE 
-  dow INTEGER;
+  dow         INTEGER;
+  dia_semana  DIA_HABIL;
 BEGIN
   dow = EXTRACT(DOW FROM NEW.fecha);
-  IF dow = 0 THEN 
+  IF dow = 0 OR CAST (NEW.dia as TEXT) = 'dom' THEN 
     RAISE EXCEPTION 'El establecimiento se encuentra cerrado los días domingo';
   END IF;
 
-  NEW.dia := CASE dow
-                WHEN 1 THEN 'lun'
-                WHEN 2 THEN 'mar'
-                WHEN 3 THEN 'mie'
-                WHEN 4 THEN 'jue'
-                WHEN 5 THEN 'vie'
-                WHEN 6 THEN 'sab'
-              END;
+  dia_semana = CASE dow
+        WHEN 1 THEN 'lun'
+        WHEN 2 THEN 'mar'
+        WHEN 3 THEN 'mie'
+        WHEN 4 THEN 'jue'
+        WHEN 5 THEN 'vie'
+        WHEN 6 THEN 'sab'
+  END;
+
+  IF dia_semana != NEW.dia THEN
+    RAISE EXCEPTION 'El día no coincide con la fecha';
+  END IF;
+
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER calcular_dia_semana_trigger
+CREATE TRIGGER chequear_dia_semana_trigger
 BEFORE INSERT ON turno
 FOR EACH ROW
-EXECUTE FUNCTION calcular_dia_semana();
+EXECUTE FUNCTION chequear_dia_semana();
 
 CREATE TABLE equipo(
   nombre    TEXT PRIMARY KEY,
