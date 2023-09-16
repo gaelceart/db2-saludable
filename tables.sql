@@ -1,5 +1,4 @@
 -- AGREGAR RESTRICCIÓN SOBRE HORARIO DEL TURNO
--- REVISAR EL TIPO DE DATO SERIAL
 
 CREATE TABLE obra_social(
   os_id   SERIAL PRIMARY KEY,
@@ -34,7 +33,7 @@ CREATE TYPE DIA_HABIL AS ENUM ('lun', 'mar', 'mie', 'jue', 'vie', 'sab');
 
 CREATE TABLE turno(
   t_id        SERIAL PRIMARY KEY,
-  paciente    INT,
+  paciente    INT NOT NULL,
   servicio    TEXT NOT NULL,
   monto       DECIMAL(12, 2) NOT NULL,
   fecha       TIMESTAMP NOT NULL,
