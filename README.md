@@ -18,3 +18,12 @@ psql:inserts.sql:62: ERROR:  invalid input value for enum dia_habil: "dom"
 ```
 psql:inserts.sql:65: ERROR:  El día no coincide con la fecha
 ```
+---
+### Lockeo
+Simulación de lockeo de la base de datos:
+
+https://github.com/gaelceart/db2-saludable/assets/59783452/4ca41a53-a2be-4f83-9409-5f9dad3ff910
+
+Los dos usuarios realizaron la misma consulta a la tabla `paciente`.
+El primer usuario 'Terminal A' realiza un *LOCK* a la tabla `paciente`, luego el segundo usuario 'Terminal B' realiza la misma consulta de antes solo que ahora se queda en espera ya que la tabla se encuentra lockeada.
+Terminal A modifica un dato con la _query_ *UPDATE* y termina el lockeo con la sentencia *COMMIT* lo que causa que, Terminal B muestre el resultado de la consulta con el dato modificado.
