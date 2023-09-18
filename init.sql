@@ -6,4 +6,5 @@ CREATE DATABASE saludable_villalba;
 
 \i tables.sql
 
-\c postgres
+\i inserts.sql
+
