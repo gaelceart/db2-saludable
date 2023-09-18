@@ -34,7 +34,20 @@ INSERT INTO disponibilidad VALUES ('jue', 'MN456789', '08:00', '16:00');
 INSERT INTO disponibilidad VALUES ('vie', 'MN567890', '10:00', '18:00');
 INSERT INTO disponibilidad VALUES ('sab', 'MN123456', '08:00', '14:00');
 
--- Insertar turnos
+INSERT INTO equipo VALUES ('Camilla de examen', 5);
+INSERT INTO equipo VALUES ('Desfibrilador', 3);
+INSERT INTO equipo VALUES ('Monitor de signos vitales', 4);
+INSERT INTO equipo VALUES ('Esterilizador de instrumentos', 1);
+INSERT INTO equipo VALUES ('Máquina de rayos X', 2);
+INSERT INTO equipo VALUES ('Incubadora neonatal', 3);
+INSERT INTO equipo VALUES ('Oftalmoscopio', 3);
+
+INSERT INTO servicio_equipo VALUES ('Cardiología', 'Desfibrilador');
+INSERT INTO servicio_equipo VALUES ('Dermatología', 'Camilla de examen');
+INSERT INTO servicio_equipo VALUES ('Ginecología', 'Camilla de examen');
+INSERT INTO servicio_equipo VALUES ('Ortopedia', 'Máquina de rayos X');
+INSERT INTO servicio_equipo VALUES ('Oftalmología', 'Oftalmoscopio');
+
 INSERT INTO turno (paciente, servicio, monto, fecha, dia) VALUES (12345678, 'Cardiología', 150.00, '2023-09-18 10:00', 'lun');
 INSERT INTO turno (paciente, servicio, monto, fecha, dia) VALUES (98765430, 'Dermatología', 120.50, '2023-09-19 14:30', 'mar');
 INSERT INTO turno (paciente, servicio, monto, fecha, dia) VALUES (98765432, 'Ginecología', 180.75, '2023-09-20 09:15', 'mie');
@@ -51,3 +64,5 @@ INSERT INTO turno (paciente, servicio, monto, fecha, dia) VALUES (50403020,'Card
 
 INSERT INTO turno (paciente, servicio, monto, fecha, dia) VALUES (50403020,'Cardiología', 5000, '2023-09-16 10:00', 'lun');
 --RAISE mensaje de error porque no coincide el día 
+
+
