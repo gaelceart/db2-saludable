@@ -53,6 +53,20 @@ CREATE TABLE disponibilidad(
   CONSTRAINT fk_medico_disp FOREIGN KEY (medico) REFERENCES medico(matricula)
 );
 
+CREATE TABLE equipo(
+  nombre    TEXT PRIMARY KEY,
+  cantidad  INT NOT NULL CHECK (cantidad >= 0)
+);
+
+CREATE TABLE servicio_equipo (
+    servicio    TEXT,
+    equipo      TEXT,
+    PRIMARY KEY (servicio, equipo),
+    CONSTRAINT fk_servicio_eq FOREIGN KEY (servicio) REFERENCES servicio(nombre),
+    CONSTRAINT fk_equipo_serv FOREIGN KEY (equipo) REFERENCES equipo(nombre)
+);
+
+
 CREATE OR REPLACE FUNCTION chequear_dia_semana()
 RETURNS TRIGGER AS $$
 DECLARE 
@@ -85,8 +99,3 @@ CREATE TRIGGER chequear_dia_semana_trigger
 BEFORE INSERT ON turno
 FOR EACH ROW
 EXECUTE FUNCTION chequear_dia_semana();
-
-CREATE TABLE equipo(
-  nombre    TEXT PRIMARY KEY,
-  cantidad  INT NOT NULL CHECK (cantidad >= 0)
-);
