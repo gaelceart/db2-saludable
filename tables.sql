@@ -44,6 +44,15 @@ CREATE TABLE turno(
   CONSTRAINT fk_paciente FOREIGN KEY (paciente) REFERENCES paciente(dni)
 );
 
+CREATE TABLE disponibilidad(
+  dia           DIA_HABIL, 
+  medico        TEXT NOT NULL,
+  hora_entrada  TIME CHECK ((dia != 'sab' AND hora_entrada >= '08:00' AND hora_entrada < '20:00') OR (dia = 'sab' AND hora_entrada >= '08:00' AND hora_entrada < '14:00')),
+  hora_salida   TIME CHECK ((dia != 'sab' AND hora_salida > '08:00' AND hora_salida<= '20:00') OR (dia = 'sab' AND hora_salida > '08:00' AND hora_salida<= '14:00')),
+  PRIMARY KEY (dia, medico, hora_entrada, hora_salida),
+  CONSTRAINT fk_medico_disp FOREIGN KEY (medico) REFERENCES medico(matricula)
+);
+
 CREATE OR REPLACE FUNCTION chequear_dia_semana()
 RETURNS TRIGGER AS $$
 DECLARE 
@@ -80,13 +89,4 @@ EXECUTE FUNCTION chequear_dia_semana();
 CREATE TABLE equipo(
   nombre    TEXT PRIMARY KEY,
   cantidad  INT NOT NULL CHECK (cantidad >= 0)
-);
-
-CREATE TABLE disponibilidad(
-  dia           DIA_HABIL, 
-  medico        TEXT NOT NULL,
-  hora_entrada  TIME CHECK ((dia != 'sab' AND hora_entrada >= '08:00' AND hora_entrada < '20:00') OR (dia = 'sab' AND hora_entrada >= '08:00' AND hora_entrada < '14:00')),
-  hora_salida   TIME CHECK ((dia != 'sab' AND hora_salida > '08:00' AND hora_salida<= '20:00') OR (dia = 'sab' AND hora_salida > '08:00' AND hora_salida<= '14:00')),
-  PRIMARY KEY (dia, medico, hora_entrada, hora_salida),
-  CONSTRAINT fk_medico_disp FOREIGN KEY (medico) REFERENCES medico(matricula)
 );
